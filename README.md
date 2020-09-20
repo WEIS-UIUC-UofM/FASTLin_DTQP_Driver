@@ -16,6 +16,10 @@ DTQP driver Matlab/python codes for linearized OpenFAST models
   - Intel Math Kernel Library
 * After install all the prerequisites, run bashrc_settings.sh to make bash recognize them.
 
-## Prerequisites for running FASTLin_DTQP_Driver
+## Prerequisites for running FASTLin_DTQP_Driver:
 * MATLAB (minimum compatible version unknown)
 * WEIS tools https://github.com/WISDEM/WEIS.git
+
+## Useful external links:
+* OutListParameters.xlsx https://github.com/OpenFAST/openfast/blob/master/docs/OtherSupporting/OutListParameters.xlsx?raw=true
+  - This file contains descriptions for abbreviated output variables of OpenFAST
