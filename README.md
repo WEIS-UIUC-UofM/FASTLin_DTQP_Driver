@@ -6,6 +6,7 @@ DTQP driver Matlab/python codes for linearized OpenFAST models
 * Yong Hoon Lee (University of Illinois at Urbana-Champaign)
 * Daniel R. Herber (Colorado State University)
 * Athul Krishna Sundarrajan (Colorado State University)
+* Procedures for OpenFAST linearization is developed based on example script provided by Daniel Zalkind (National Renewable Energy Laboratory)
 
 ## Prerequisites for compiling WEIS tools:
 * Anaconda for Python 3.8 or higher
