@@ -215,15 +215,26 @@ function LinearModels = FASTLin_ProcessLinearModels(LinModelFile,FASTOutPath,Red
         % Output Labels
         P{iCase}.OutputName = indOutsLbl;
         
+        % Save original full size model
+        P_full{iCase} = P{iCase};
+        SS_Ops_full(iCase) = SS_Ops(iCase);
+        
         % Model reduction
         if ReduceModel
             P{iCase} = minreal(P{iCase});
+            % Operating point re-calculation for reduced model
+            funLSQ = @(x) (P{iCase}.C*x + P{iCase}.D*SS_Ops(iCase).uop - SS_Ops(iCase).yop)./(abs(SS_Ops(iCase).yop)+sqrt(eps));
+            xop = lsqnonlin(funLSQ,zeros(size(P{iCase}.A,1),1));
+            SS_Ops(iCase).xop = xop;
+            SS_Ops(iCase).xdop = P{iCase}.A*xop + P{iCase}.B*SS_Ops(iCase).uop;
         end
     end
     
     % Return values
     LinearModels.P = P;
+    LinearModels.P_full = P_full;
     LinearModels.SS_Ops = SS_Ops;
+    LinearModels.SS_Ops_full = SS_Ops_full;
     LinearModels.WindSpeed = WindSpeed;
     LinearModels.FST = FST;
     LinearModels.Servo = Servo;
@@ -231,6 +242,6 @@ function LinearModels = FASTLin_ProcessLinearModels(LinModelFile,FASTOutPath,Red
     
     % Save for future use
     if SaveFlag
-        save(LinModelFile, 'P', 'SS_Ops', 'WindSpeed', 'FST', 'Servo', 'DISCON');
+        save(LinModelFile, 'P', 'P_full', 'SS_Ops', 'SS_Ops_full', 'WindSpeed', 'FST', 'Servo', 'DISCON');
     end
 end
