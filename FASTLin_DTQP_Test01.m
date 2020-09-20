@@ -4,6 +4,15 @@ function FASTLin_DTQP_Test01
     mname = mfilename('fullpath');
     [mpath, mname] = fileparts(mname);
     savepath = fullfile(mpath,'SaveData',mname);
+    switch exist(savepath)
+        case 0
+            mkdir(savepath);
+            disp(['Processed linear model location: ',savepath]);
+        case 7
+            disp(['Processed linear model location: ',savepath]);
+        otherwise
+            error([savepath,' should be directory.'])
+    end
     
     % Read/Create Linear Models
     LinModelFile = fullfile(savepath,'LinearModels.mat');
@@ -30,10 +39,12 @@ function FASTLin_DTQP_Test01
         Wind_mean = mean(Wind_data);
         Wind_time = Wind_o.Chan.tt(lin_inds);
         Wind_time = Wind_time - Wind_time(1);
-        Wind_sampling_dt = 0.5;
-        Wind_sampling_nt = ceil(Wind_time(end)/Wind_sampling_dt) + 1;
-        Wind_data_smooth = smoothdata(Wind_data,'sgolay',Wind_sampling_nt);
-        Wind_profile = @(t) interp1(Wind_time,Wind_data_smooth,t);
+        %Wind_sampling_dt = 0.5;
+        %Wind_sampling_nt = ceil(Wind_time(end)/Wind_sampling_dt) + 1;
+        %Wind_data_smooth = smoothdata(Wind_data,'sgolay',Wind_sampling_nt);
+        %Wind_profile = @(t) interp1(Wind_time,Wind_data_smooth,t);
+        Wind_mean = 15;
+        Wind_profile = @(t) Wind_mean;
     else
         error('Wind disturbance profile not found');
     end
@@ -43,15 +54,16 @@ function FASTLin_DTQP_Test01
     BB = zeros(size(LinearModels.P{1}.B,1),size(LinearModels.P{1}.B,2),length(LinearModels.P));
     CC = zeros(size(LinearModels.P{1}.C,1),size(LinearModels.P{1}.C,2),length(LinearModels.P));
     DD = zeros(size(LinearModels.P{1}.D,1),size(LinearModels.P{1}.D,2),length(LinearModels.P));
-    u_opsM  = zeros(size(LinearModels.SS_Ops(1).uop,1),length(LinearModels.P));
-    y_opsM  = zeros(size(LinearModels.SS_Ops(1).yop,1),length(LinearModels.P));
+    x_opsM = zeros(size(LinearModels.SS_Ops(1).xop,1),length(LinearModels.P));
+    u_opsM = zeros(size(LinearModels.SS_Ops(1).uop,1),length(LinearModels.P));
+    y_opsM = zeros(size(LinearModels.SS_Ops(1).yop,1),length(LinearModels.P));
     for iSys = 1:length(LinearModels.P)
         s = size(LinearModels.P{iSys}.A);
         nStates(iSys) = s(1);
         uh_ops(iSys) = LinearModels.WindSpeed(iSys);
+        x_opsM(:,iSys) = LinearModels.SS_Ops(iSys).xop;
         u_opsM(:,iSys) = LinearModels.SS_Ops(iSys).uop;
         y_opsM(:,iSys) = LinearModels.SS_Ops(iSys).yop;
-
         AA(:,:,iSys)    = LinearModels.P{iSys}.A;
         BB(:,:,iSys)    = LinearModels.P{iSys}.B;
         CC(:,:,iSys)    = LinearModels.P{iSys}.C;
@@ -70,9 +82,9 @@ function FASTLin_DTQP_Test01
     P_op = ss(A_op,B_op,C_op,D_op);
     P_op.InputName = LinearModels.P{1}.InputName;
     P_op.OutputName = LinearModels.P{1}.OutputName;
+    x_op = interp1(uh_ops',x_opsM',Wind_mean);
     u_op = interp1(uh_ops',u_opsM',Wind_mean);
     y_op = interp1(uh_ops',y_opsM',Wind_mean);
-    %x_op cannot be computed, since the model is reduced
     
     % DT-QP
     opts.general.mname = mname;
@@ -123,14 +135,12 @@ function FASTLin_DTQP_Test01
     idx2 = find(contains(LinearModels.DISCON.Label,'SD_MaxPit'));
     UB(2).right = 1;
     UB(2).matrix = {@(t)Wind_profile(t);
-                    LinearModels.DISCON.Val{idx1};
-                    LinearModels.DISCON.Val{idx2}};
+                    @(t)path_with_initial(t,u_op(2),LinearModels.DISCON.Val{idx1});
+                    @(t)path_with_initial(t,u_op(3),LinearModels.DISCON.Val{idx2})};
     
     % Upper bounds for states at initial time
-    % YHL: If we do not have this initial condition, several problems occur
-    % including constraint violation, large discontinuity, etc.
-    %UB(3).right = 4;
-    %UB(3).matrix = zeros(size(A_op,1),1);
+    UB(3).right = 4;
+    UB(3).matrix = x_op';
     
     % Lower bounds for states
     LB(1).right = 2;
@@ -139,14 +149,12 @@ function FASTLin_DTQP_Test01
     % Lower bounds for controls
     LB(2).right = 1;
     LB(2).matrix = {@(t)Wind_profile(t);
-                    0;
-                    0};
+                    @(t)path_with_initial(t,u_op(2),0);
+                    @(t)path_with_initial(t,u_op(3),0)};
     
     % Lower bounds for states at initial time
-    % YHL: If we do not have this initial condition, several problems occur
-    % including constraint violation, large discontinuity, etc.
-    %LB(3).right = 4;
-    %LB(3).matrix = zeros(size(A_op,1),1);
+    LB(3).right = 4;
+    LB(3).matrix = x_op';
     
     setup.A = P_op.A;
     setup.B = P_op.B;
@@ -186,7 +194,7 @@ function FASTLin_DTQP_Test01
     subplot(6,3,10);
         idx1 = find(contains(P_op.OutputName,'ED GenSpeed'));
         idx2 = find(contains(P_op.OutputName,'ED RotTorq'));
-        plot(T2,R2(:,idx1).*R2(:,idx2));
+        plot(T2,R2(:,idx1)*(2*pi/60).*R2(:,idx2));
         title('Gen speed * Rot Torque');
     % Plot Output
     subplot(6,3,2);
@@ -264,4 +272,12 @@ function FASTLin_DTQP_Test01
         idx = find(contains(P_op.OutputName,'HD Wave1Elev'));
         plot(T2,R2(:,idx));
         title('Hydrodynamic Wave Elevation [m]');
+end
+
+function vr = path_with_initial(t,iv,v)
+    if t < eps
+        vr = iv;
+    else
+        vr = v;
+    end
 end
