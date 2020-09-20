@@ -221,10 +221,12 @@ function LinearModels = FASTLin_ProcessLinearModels(LinModelFile,FASTOutPath,Red
         
         % Model reduction
         if ReduceModel
-            P{iCase} = minreal(P{iCase});
+            [P{iCase},UMat{iCase}] = minreal(P{iCase});
             % Operating point re-calculation for reduced model
-            funLSQ = @(x) (P{iCase}.C*x + P{iCase}.D*SS_Ops(iCase).uop - SS_Ops(iCase).yop)./(abs(SS_Ops(iCase).yop)+sqrt(eps));
-            xop = lsqnonlin(funLSQ,zeros(size(P{iCase}.A,1),1));
+            %funLSQ = @(x) (P{iCase}.C*x + P{iCase}.D*SS_Ops(iCase).uop - SS_Ops(iCase).yop)./(abs(SS_Ops(iCase).yop)+sqrt(eps));
+            %xop = lsqnonlin(funLSQ,zeros(size(P{iCase}.A,1),1));
+            xop = UMat{iCase}*SS_Ops_full(iCase).xop;
+            xop = xop(1:size(P{iCase}.A,1),1);
             SS_Ops(iCase).xop = xop;
             SS_Ops(iCase).xdop = P{iCase}.A*xop + P{iCase}.B*SS_Ops(iCase).uop;
         end
@@ -233,6 +235,7 @@ function LinearModels = FASTLin_ProcessLinearModels(LinModelFile,FASTOutPath,Red
     % Return values
     LinearModels.P = P;
     LinearModels.P_full = P_full;
+    LinearModels.UMat = UMat;
     LinearModels.SS_Ops = SS_Ops;
     LinearModels.SS_Ops_full = SS_Ops_full;
     LinearModels.WindSpeed = WindSpeed;
@@ -242,6 +245,6 @@ function LinearModels = FASTLin_ProcessLinearModels(LinModelFile,FASTOutPath,Red
     
     % Save for future use
     if SaveFlag
-        save(LinModelFile, 'P', 'P_full', 'SS_Ops', 'SS_Ops_full', 'WindSpeed', 'FST', 'Servo', 'DISCON');
+        save(LinModelFile, 'P', 'P_full', 'UMat', 'SS_Ops', 'SS_Ops_full', 'WindSpeed', 'FST', 'Servo', 'DISCON');
     end
 end
