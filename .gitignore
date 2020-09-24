@@ -9,3 +9,4 @@ slprj/
 octave-workspace
 .autosave
 .DS_Store
+SaveData/*
