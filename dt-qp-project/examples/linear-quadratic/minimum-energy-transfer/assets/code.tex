@@ -1,0 +1,23 @@
+% https://www.latex4technics.com/
+
+% formulation
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{bm}
+\usepackage{graphicx}
+\usepackage{geometry}
+\geometry{top=0in, bottom=0in, left=0in, right=0in, paperheight=100in, paperwidth=100in}
+\thispagestyle{empty}
+\begin{document}
+\scalebox{2}{\parbox{0.1\textwidth}{%
+\begin{align*}
+\min_{\bm{u}(t)} \quad & \int_{t_0}^{t_f} \bm{u}^\intercal \bm{I} \bm{u}\ dt \\
+\text{subject to:} \quad & \dot{\bm{\xi}} = \bm{A} \bm{\xi} + \bm{B} \bm{u} \\
+& \bm{\xi}(t_0) = \bm{\xi}_0 \\
+& \bm{\xi}(t_f) = \bm{\xi}_f
+\end{align*}
+}}
+\end{document}
+
+% solution
