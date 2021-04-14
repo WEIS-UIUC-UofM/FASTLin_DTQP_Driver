@@ -187,8 +187,8 @@ function opts = SimpleSuspensionNested_opts
 opts.dt.defects = 'TR';
 opts.dt.quadrature = 'CTR';
 opts.dt.mesh = 'ED';
-opts.dt.nt = 1000;
-opts.general.displevel = 1;
+opts.dt.nt = 2000;
+opts.general.displevel = 0;
 opts.solver.tolerance = 1e-16;
 
 end

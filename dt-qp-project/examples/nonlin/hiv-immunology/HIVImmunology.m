@@ -60,7 +60,13 @@ LB(3).right = 1; LB(3).matrix = [0;0];
 % guess
 Y0 = [[400,3];[400,3]];
 U0 = [[0.02,0.9];[0,0]];
-p.guess = [U0,Y0];
+setup.guess.X = [U0,Y0];
+
+% scaling
+setup.scaling(1).right = 1; % controls
+setup.scaling(1).matrix = [0.02;0.9];
+setup.scaling(2).right = 2; % states
+setup.scaling(2).matrix = [1200 5];
 
 % combine structures
 setup.symb = symb; setup.UB = UB; setup.LB = LB; setup.L = L;
@@ -95,6 +101,7 @@ switch num
     opts.dt.mesh = 'ED';
     opts.dt.nt = 100; % number of nodes
     opts.solver.function = 'ipfmincon';
+    opts.solver.tolerance = 1e-10;
     opts.method.form = 'nonlinearprogram';
     opts.method.olqflag = true;
 end

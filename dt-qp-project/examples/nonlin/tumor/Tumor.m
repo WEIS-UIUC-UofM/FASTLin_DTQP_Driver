@@ -64,7 +64,13 @@ LB(3).right = 2; LB(3).matrix = ymin'; % states
 % guess
 Y0 = [[y0];[y0]];
 U0 = [[umax];[umax]];
-p.guess = [U0,Y0];
+setup.guess.X = [U0,Y0];
+
+% scaling
+setup.scaling(1).right = 1; % controls
+setup.scaling(1).matrix = umax;
+setup.scaling(2).right = 2; % states
+setup.scaling(2).matrix = [p0,q0,A0];
 
 % combine structures
 setup.symb = symb; setup.M = M; setup.UB = UB; setup.LB = LB;

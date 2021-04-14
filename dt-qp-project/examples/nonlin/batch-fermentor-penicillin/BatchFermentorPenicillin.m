@@ -57,7 +57,13 @@ LB(4).right = 2; LB(4).matrix = [0,0,0,0];
 Y0 = [[1.5,0,0,7];[30,8.5,0,10]];
 U0 = [[10];[10]];
 P0 = [[10];[10]];
-p.guess = [U0,Y0,P0];
+setup.guess.X = [U0,Y0,P0];
+
+% scaling
+setup.scaling(1).right = 1; % controls
+setup.scaling(1).matrix = [50];
+setup.scaling(2).right = 2; % states
+setup.scaling(2).matrix = [40,50,25,10];
 
 % combine structures
 setup.symb = symb; setup.M = M; setup.UB = UB; setup.LB = LB;

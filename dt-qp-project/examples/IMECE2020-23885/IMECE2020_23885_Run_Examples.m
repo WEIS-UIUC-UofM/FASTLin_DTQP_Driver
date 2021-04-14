@@ -11,15 +11,15 @@
 close all; clear; clc
 
 % examples to test
-f = @ContainerCrane;
+%f = @ContainerCrane;
 % f = @Vanderpol;
 % f = @SimpleCoDesignTransfer;
-% f = @SimpleSuspensionSimultaneous;
+ f = @SimpleSuspensionSimultaneous;
 
 % DTQP options test cases defined below
-testcase = "TR";
+%testcase = "TR";
 % testcase = "PS";
-% testcase = "TR-Suspension";
+ testcase = "TR-Suspension";
 % testcase = "QLIN";
 
 % method fragments
@@ -63,7 +63,7 @@ switch testcase
     %----------------------------------------------------------------------
     case "TR-Suspension" % remove qlin test
     % create nt test array
-    narray = [200 2000]; % TR
+    narray = [20 200 2000]; % TR
 
     % method lists
     MethodArray = Methods([2 2 2 2]);
@@ -71,6 +71,7 @@ switch testcase
     DerivArray = Derivatives([1 1 2 2]);
     DefectArray = Defects([1 1 1 1]);
     QuadArray = Quads([1 1 1 1]);
+    MeshArray = Meshes([1 1 1 1]);
 
     % options
     opts.solver.tolerance = 1e-7;

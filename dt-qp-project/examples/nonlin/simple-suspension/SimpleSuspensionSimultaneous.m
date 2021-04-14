@@ -72,7 +72,15 @@ UB(3).matrix = [inf,inf,p.rmax,inf];
 Y0 = [[0,0,0,0];[0,0,0,0]];
 U0 = [[0];[0]];
 P0 = [[LB(2).matrix'];[LB(2).matrix']];
-p.guess = [U0,Y0,P0];
+setup.guess.X = [U0,Y0,P0];
+
+% scaling (with knowledge of the solution)
+setup.scaling(1).right = 1; % controls
+setup.scaling(1).matrix = 400;
+setup.scaling(2).right = 2; % states
+setup.scaling(2).matrix = [0.004 0.4 p.rmax 0.04];
+setup.scaling(3).right = 3; % parameters
+setup.scaling(3).matrix = [1e2;1e4];
 
 % combine structures
 setup.symb = symb; setup.UB = UB; setup.LB = LB;

@@ -61,16 +61,20 @@ M(1).left = 0; M(1).right = 5; M(1).matrix = [-1,0,0,0];
 % guess
 Y0 = [[1,0,0,1];[1.5,pi,0,0.5]];
 U0 = [[0,1];[-1,0]];
-p.guess = [U0,Y0];
+setup.guess.X = [U0,Y0];
+
+% scaling
+setup.scaling(1).right = 1; % controls
+setup.scaling(1).matrix = [1,1];
+setup.scaling(2).right = 2; % states
+setup.scaling(2).matrix = [1.5,2.5,0.3,1];
 
 % combine structures
 setup.symb = symb; setup.UB = UB; setup.LB = LB; setup.M = M;
 setup.t0 = p.t0; setup.tf = p.tf; setup.p = p; setup.n = n;
 
 %% solve
-t1 = tic;
 [T,U,Y,P,F,in,opts] = DTQP_solve(setup,opts);
-toc(t1);
 
 %% output
 [O,sol] = ex_output(T,U,Y,P,F,in,opts);
@@ -86,7 +90,7 @@ end
 % User options function for this example
 function opts = TransferMaxRadius_opts
 % test number
-num = 1;
+num = 2;
 
 switch num
 case 1 % ipfmincon method
@@ -100,6 +104,31 @@ case 1 % ipfmincon method
     opts.solver.maxiters = 2000;
     opts.solver.display = 'iter';
     opts.method.form = 'nonlinearprogram';
+case 2
+    opts.general.plotflag = 1; % create the plots
+    opts.general.displevel = 2;
+    opts.dt.defects = 'TR';
+    opts.dt.quadrature = 'CTR';
+    opts.dt.mesh = 'ED';
+    opts.dt.nt = 20; % number of nodes
+    opts.solver.tolerance = 1e-8;
+    opts.solver.maxiters = 2000;
+    opts.solver.display = 'iter';
+    opts.method.form = 'nonlinearprogram';
+    opts.dt.meshr.method = 'RICHARDSON-DOUBLING';
+    opts.dt.meshr.tolerance = 1e-6;
+case 3
+    opts.general.plotflag = 1; % create the plots
+    opts.general.displevel = 2;
+    opts.dt.defects = 'PS';
+    opts.dt.quadrature = 'G';
+    opts.dt.mesh = 'LGL';
+    opts.dt.nt = 10; % number of nodes
+    opts.solver.tolerance = 1e-8;
+    opts.solver.display = 'iter';
+    opts.method.form = 'nonlinearprogram';
+    opts.dt.meshr.method = 'RICHARDSON-DOUBLING';
+    opts.dt.meshr.tolerance = 1e-6;
 end
 
 end

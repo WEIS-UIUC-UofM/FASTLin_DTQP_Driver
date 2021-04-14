@@ -51,7 +51,7 @@ LB(3).right = 1; LB(3).matrix = -2*pi;
 % guess
 Y0 = [[0,0];[0,0]];
 U0 = [[0];[0]];
-p.guess = [U0,Y0];
+setup.guess.X = [U0,Y0];
 
 % combine structures
 setup.symb = symb; setup.UB = UB; setup.LB = LB;
@@ -73,11 +73,11 @@ end
 % User options function for this example
 function opts = BrysonHo63_opts
 % test number
-num = 1;
+num = 2;
 
 switch num
     case 1
-    opts.general.displevel = 1;
+    opts.general.displevel = 2;
     opts.general.plotflag = 1;
     opts.dt.defects = 'TR';
     opts.dt.quadrature = 'CTR';
@@ -86,6 +86,18 @@ switch num
     opts.solver.display = 'iter';
     opts.solver.function = 'ipfmincon';
     opts.method.form = 'nonlinearprogram';
+    case 2
+    opts.general.displevel = 2;
+    opts.general.plotflag = 1;
+    opts.dt.defects = 'TR';
+    opts.dt.quadrature = 'CTR';
+    opts.dt.mesh = 'ED';
+    opts.dt.nt = 20; % number of nodes
+    opts.solver.display = 'iter';
+    opts.solver.function = 'ipfmincon';
+    opts.method.form = 'nonlinearprogram';
+    opts.dt.meshr.method = 'RICHARDSON-DOUBLING';
+    opts.dt.meshr.tolerance = 1e-4;
 end
 
 end

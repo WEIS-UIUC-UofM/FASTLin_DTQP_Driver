@@ -51,7 +51,7 @@ switch casenum
         % guess
         Y0 = [[1,0];[1,0]];
         U0 = [[0];[0]];
-        p.guess = [U0,Y0];
+        setup.guess.X = [U0,Y0];
 
         % combine structures
         setup.symb = symb; setup.UB = UB; setup.LB = LB; % setup.L = L;
@@ -89,7 +89,7 @@ switch casenum
         Y0 = [[1,0];[0,0]];
         U0 = [[0];[0]];
         P0 = [[1,1];[1,1]];
-        p.guess = [U0,Y0,P0];
+        setup.guess.X = [U0,Y0,P0];
 
         % combine structures
         setup.symb = symb; setup.UB = UB; setup.LB = LB;
@@ -113,7 +113,7 @@ switch casenum
         % guess
         Y0 = [[1,0];[1,0]];
         U0 = [[0];[0]];
-        p.guess = [U0,Y0];
+        setup.guess.X = [U0,Y0];
 
         % combine structures
         setup.symb = symb; % setup.UB = UB; setup.LB = LB; % setup.L = L;
@@ -137,7 +137,7 @@ end
 % User options function for this example
 function opts = Vanderpol_opts
 % test number
-num = 1;
+num = 3;
 
 switch num
 case 1
@@ -171,10 +171,10 @@ case 3
     opts.dt.defects = 'TR';
     opts.dt.quadrature = 'CTR';
     opts.dt.mesh = 'ED';
-    opts.dt.defects = 'PS';
-    opts.dt.quadrature = 'G';
-    opts.dt.mesh = 'LGL';
-    opts.method.maxiters = 5000;
+%     opts.dt.defects = 'PS';
+%     opts.dt.quadrature = 'G';
+%     opts.dt.mesh = 'LGL';
+    opts.method.maxiters = 15;
     opts.dt.nt = 40; % number of nodes
     opts.method.form = 'qlin';
     opts.solver.display = 'none';
