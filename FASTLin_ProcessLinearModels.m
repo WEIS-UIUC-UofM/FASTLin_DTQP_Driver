@@ -1,48 +1,39 @@
-function LinearModels = FASTLin_ProcessLinearModels(LinModelFile,FASTOutPath,ReduceModel,SaveFlag)
-    % FAST parameters
-    outPrefix = 'lin';
-    outSuffix = '.outb';
-    outFiles = dir(fullfile(FASTOutPath,[outPrefix,'*',outSuffix]));
-    nLinCases = length(outFiles);
-    if nLinCases <= 10
-        numstring = '%01d';
-    else
-        numstring = '%02d';
-    end
-    
-    % Initialize
-    MBC = cell(1,nLinCases);
-    matData = cell(1,nLinCases);
-    WindSpeed = zeros(1,nLinCases);
-    P = cell(1,nLinCases);
-    
-    % Temporary parameters
+function LinearModels = FASTLin_ProcessLinearModels(LinModelFile,FASTOutPath,ReduceModel,Saveflag,casename)
+
+outPrefix = strcat(casename,'_');
+outSuffix = '.outb';
+outfiles = dir(fullfile(FASTOutPath,[outPrefix,'*',outSuffix]));
+nLinCases = length(outfiles);
+
+if nLinCases <= 10
+    numstring = '%01d';
+else
+    numstring = '%02d';
+end
+
+% Initialize
+MBC = cell(1,nLinCases);
+matData = cell(1,nLinCases);
+WindSpeed = zeros(1,nLinCases);
+P = cell(1,nLinCases);
+
+% Temporary parameters
     iCase = 1;
     iAz = 1;
     
-    % Read FST, Servo, and DISCON files
-    FST = FAST2Matlab(fullfile(FASTOutPath,[outPrefix,'_',num2str(iCase-1,numstring),'.fst']));
+ % Read FST, Servo, and DISCON files
+    FST = FAST2Matlab(fullfile(FASTOutPath,[outPrefix,num2str(iCase-1,numstring),'.fst']));
     idx = find(contains(FST.Label,'ServoFile'));
     ServoFile = replace(FST.Val{idx},'"','');
     Servo = FAST2Matlab(fullfile(FASTOutPath,ServoFile));
     idx = find(contains(Servo.Label,'DLL_InFile'));
     DISCONFile = replace(Servo.Val{idx},'"','');
-    DISCON = ROSCO2Matlab(fullfile(FASTOutPath,DISCONFile));
-        
-    % Obtain linearized model state, control, and output variables
-    LinResult = ReadFASTLinear(fullfile(FASTOutPath,[outPrefix,'_',num2str(iCase-1,numstring),'.',num2str(iAz),'.lin']));
-    nx = size(LinResult.x_op,1);
-    nu = size(LinResult.u_op,1);
-    ny = size(LinResult.y_op,1);
-    xLabel = LinResult.x_desc;
-    uLabel = LinResult.u_desc;
-    yLabel = LinResult.y_desc;
+    DISCON = ROSCO2Matlab(fullfile(FASTOutPath,DISCONFile));  
+    
     
     for iCase = 1:nLinCases
-        % Read .lin files perform MBC3 transformation to obtain the linear
-        % model independent to the azimuth angle of blades
-        % Process .lin files
-        LinFilesS{iCase} = dir(fullfile(FASTOutPath,[outPrefix,'_',num2str(iCase-1,numstring),'.*.lin']));
+        
+        LinFilesS{iCase} = dir(fullfile(FASTOutPath,[outPrefix,num2str(iCase-1,numstring),'*.lin']));
         if isempty(LinFilesS{1})
             error('WARNING: Didn''t find any linear files');
         end
@@ -50,12 +41,6 @@ function LinearModels = FASTLin_ProcessLinearModels(LinModelFile,FASTOutPath,Red
             LinFiles{iFile} = fullfile(FASTOutPath,LinFilesS{iCase}(iFile).name);
         end
         [MBC{iCase},matData{iCase}] = fx_mbc3(LinFiles);
-
-        % Obtain FAST parameters and subfile parameters
-        FSTName = fullfile(FASTOutPath,[outPrefix,'_',num2str(iCase-1,numstring),'.fst']);
-        FP = FAST2Matlab(FSTName,2); % FAST parameters, 2 lines of header (v8)
-        [IfWP, InflowFile] = GetFASTPar_Subfile(FP, 'InflowFile', FASTOutPath, FASTOutPath);
-        [EdP, ElastoFile]  = GetFASTPar_Subfile(FP, 'EDFile', FASTOutPath, FASTOutPath);
         
         % State variable indices
         AzDesc = 'ED Variable speed generator DOF'; % Azimuth [rad]
@@ -78,8 +63,6 @@ function LinearModels = FASTLin_ProcessLinearModels(LinModelFile,FASTOutPath,Red
         GenSpeedDesc = 'ED GenSpeed'; % Angular speed of high-speed shaft and generator [rpm]
         IPDeflDesc = 'ED IPDefl1'; % In-plane tip deflection of blade 1 (Same values for all blades) [m]
         NcIMURAxsDesc = 'ED NcIMURAxs'; % Nacelle IMU rotational acceleration in xs-axis [deg/s^2]
-        NcIMURAysDesc = 'ED NcIMURAys'; % Nacelle IMU rotational acceleration in ys-axis [deg/s^2]
-        NcIMURAzsDesc = 'ED NcIMURAzs'; % Nacelle IMU rotational acceleration in zs-axis [deg/s^2]
         NcIMUTAxsDesc = 'ED NcIMUTAxs'; % Nacelle IMU translational acceleration in xs-axis [deg/s^2]
         NcIMUTAysDesc = 'ED NcIMUTAys'; % Nacelle IMU translational acceleration in ys-axis [deg/s^2]
         NcIMUTAzsDesc = 'ED NcIMUTAzs'; % Nacelle IMU translational acceleration in zs-axis [deg/s^2]
@@ -121,8 +104,6 @@ function LinearModels = FASTLin_ProcessLinearModels(LinModelFile,FASTOutPath,Red
         indOut.GenSpeedInd = find(contains(matData{iCase}.DescOutput,GenSpeedDesc));
         indOut.IPDeflInd = find(contains(matData{iCase}.DescOutput,IPDeflDesc));
         indOut.NcIMURAxsInd = find(contains(matData{iCase}.DescOutput,NcIMURAxsDesc));
-        indOut.NcIMURAysInd = find(contains(matData{iCase}.DescOutput,NcIMURAysDesc));
-        indOut.NcIMURAzsInd = find(contains(matData{iCase}.DescOutput,NcIMURAzsDesc));
         indOut.NcIMUTAxsInd = find(contains(matData{iCase}.DescOutput,NcIMUTAxsDesc));
         indOut.NcIMUTAysInd = find(contains(matData{iCase}.DescOutput,NcIMUTAysDesc));
         indOut.NcIMUTAzsInd = find(contains(matData{iCase}.DescOutput,NcIMUTAzsDesc));
@@ -161,7 +142,7 @@ function LinearModels = FASTLin_ProcessLinearModels(LinModelFile,FASTOutPath,Red
         indOut.RtVAvgxhInd = find(contains(matData{iCase}.DescOutput,RtVAvgxhDesc));
         indOut.Wave1ElevInd = find(contains(matData{iCase}.DescOutput,Wave1ElevDesc));
         indOuts = [indOut.GenPwrInd, indOut.GenSpeedInd, indOut.IPDeflInd, ...
-            indOut.NcIMURAxsInd, indOut.NcIMURAysInd, indOut.NcIMURAzsInd, ...
+            indOut.NcIMURAxsInd, ...
             indOut.NcIMUTAxsInd, indOut.NcIMUTAysInd, indOut.NcIMUTAzsInd, indOut.OoPDeflInd, ...
             indOut.PlfmHeaveInd, indOut.PlfmPitchInd, indOut.PlfmRollInd, ...
             indOut.PlfmSurgeInd, indOut.PlfmSwayInd, indOut.PlfmYawInd, ...
@@ -175,7 +156,7 @@ function LinearModels = FASTLin_ProcessLinearModels(LinModelFile,FASTOutPath,Red
             indOut.RtAeroMxhInd, indOut.RtAeroMyhInd, indOut.RtAeroMzhInd, ...
             indOut.RtTSRInd, indOut.RtVAvgxhInd, indOut.Wave1ElevInd];
         indOutsLbl = {GenPwrDesc, GenSpeedDesc, IPDeflDesc, ...
-            NcIMURAxsDesc, NcIMURAysDesc, NcIMURAzsDesc, ...
+            NcIMURAxsDesc, ...
             NcIMUTAxsDesc, NcIMUTAysDesc, NcIMUTAzsDesc, OoPDeflDesc, ...
             PlfmHeaveDesc, PlfmPitchDesc, PlfmRollDesc, ...
             PlfmSurgeDesc, PlfmSwayDesc, PlfmYawDesc, ...
@@ -229,13 +210,17 @@ function LinearModels = FASTLin_ProcessLinearModels(LinModelFile,FASTOutPath,Red
             xop = xop(1:size(P{iCase}.A,1),1);
             SS_Ops(iCase).xop = xop;
             SS_Ops(iCase).xdop = P{iCase}.A*xop + P{iCase}.B*SS_Ops(iCase).uop;
+            LinearModels.UMat = UMat;
         end
     end
     
     % Return values
     LinearModels.P = P;
     LinearModels.P_full = P_full;
+    if ~isfield(LinearModels,'Umat')
+        UMat = [];
     LinearModels.UMat = UMat;
+    end
     LinearModels.SS_Ops = SS_Ops;
     LinearModels.SS_Ops_full = SS_Ops_full;
     LinearModels.WindSpeed = WindSpeed;
@@ -244,7 +229,8 @@ function LinearModels = FASTLin_ProcessLinearModels(LinModelFile,FASTOutPath,Red
     LinearModels.DISCON = DISCON;
     
     % Save for future use
-    if SaveFlag
+    if Saveflag
         save(LinModelFile, 'P', 'P_full', 'UMat', 'SS_Ops', 'SS_Ops_full', 'WindSpeed', 'FST', 'Servo', 'DISCON');
     end
+
 end
