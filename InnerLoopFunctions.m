@@ -117,6 +117,9 @@ switch flag
         
         ha = gca; ha.LineWidth = 1; ha.FontSize = 14;
         hf = gcf; hf.Color = 'w';
+        set(0,'DefaultTextInterpreter','latex'); % change the text interpreter
+        set(0,'DefaultLegendInterpreter','latex'); % change the legend interpreter
+        set(0,'DefaultAxesTickLabelInterpreter','latex'); % change the tick interpreter\
         
         % plot
         
