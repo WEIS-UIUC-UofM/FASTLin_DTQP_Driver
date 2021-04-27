@@ -10,7 +10,7 @@
 % Contributor: Daniel R. Herber (danielrherber on GitHub)
 %--------------------------------------------------------------------------
 
-function [T1,U,X,Pitch_rate,F] = Innerloop(casefile,Pconstraint,WindFile)
+function [T1,U,X,Pitch_rate,F] = Innerloop(casefile,Pconstraint,WindFile,PlotFlag)
 
 clc;
 
@@ -92,7 +92,7 @@ opts.dt.nt = 1000;
 %% W_fun
 % interpolate the discrete values of the wind speed into a continuous
 % function
-time = linspace(tt(1),tt(end),opts.dt.nt);
+time = linspace(tt(1),tt(end),opts.dt.nt)';
 ppW = spline(tt,Wind_speed);
 W_fun = @(t) ppval(ppW,t); % wind speed function
 
@@ -106,7 +106,7 @@ Xo_pp = pchip(w_ops,x_opsM);
 DXo_pp = fnder(Xo_pp);
 DXo_fun = @(w) ppval(DXo_pp,w);
 
-DXoDt_fun = @(t)((-DXo_fun(W_fun(t))).*DW_fun(t))';
+DXoDt_fun = @(t)((-DXo_fun(W_fun(t'))).*DW_fun(t'))';
 
 %% Interpolate the discrete operating point values into continuous functions
 flag = 'Disc2Cont';InnerLoopFunctions
@@ -193,9 +193,9 @@ LB(ix).matrix = X0_n-Xo_fun(W_fun(0));
 
 %% DTQP setup
 
-setup.A = TVmat2cell(A_op,time,W_fun,1);
-setup.B = TVmat2cell(B_op,time,W_fun,1);
-setup.d = TVmat2cell(DXoDt_fun,time,W_fun,0);
+setup.A = TVmat2cell(@(t)A_op(W_fun(t)),time);
+setup.B = TVmat2cell(@(t)B_op(W_fun(t)),time);
+setup.d = TVmat2cell(DXoDt_fun,time);
 setup.L = L;
 setup.Z = Z;
 setup.UB = UB;
@@ -217,6 +217,11 @@ Prate = fnder(Pitch);
 Pr = @(t)ppval(Prate,t);
 Pitch_rate = Pr(T1);
 
+if PlotFlag
+    % plot
+    flag = 'IL_plot';InnerLoopFunctions
+end
+
 catch
    X = [];
    U = [];
@@ -224,35 +229,17 @@ catch
 end
 
 %% Plot
-
-plotflag = 1;
-
-if plotflag
-    % plot
-    flag = 'IL_plot';InnerLoopFunctions
-end
-
     
 end
 
 
 
-function A = TVmat2cell(f,time,W_fun,flag)
+function A = TVmat2cell(f,time)
 
 % function to convert nt*nx*nz matrix to nx*nx cell
 
-% extract time 
-t = time;
-
-
-if flag
-    w = W_fun(t);
-else
-    w = t;
-end
-
 % evaluate function
-At = f(w);
+At = f(time);
 
 % get sizes
 m = size(At,2);
