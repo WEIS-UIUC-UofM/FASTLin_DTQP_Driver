@@ -101,7 +101,7 @@ zips(ind).test = 'INSTALL_DTQP';
 
 % zip 2
 ind = ind+1; 
-zips(ind).url = 'https://www.mathworks.com/matlabcentral/mlc-downloads/downloads/7c638d4c-0763-497d-8cad-dd04d42a1352/9bf146f3-da99-48f5-bae5-2cd220c3f5cc/packages/zip'; 
+zips(ind).url = 'https://colostate-my.sharepoint.com/:u:/g/personal/athulsun_colostate_edu/EXn1-4J-p9pMhzDFzgxA0W0BrCuUbFogACiPfXdPohZlsA?download=1'; 
 zips(ind).folder = 'DataFiles.zip';
 zips(ind).test = 'pd_0.2_linear';
  
