@@ -36,28 +36,20 @@ for iSys = 1:nl
     % operating points
     x_opsM(:,iSys) = LinearModels.SS_Ops(iSys).xop;
     u_opsM(:,iSys) = LinearModels.SS_Ops(iSys).uop;
-    y_opsM(:,iSys) = LinearModels.SS_Ops(iSys).yop;
     
     % matrices
     Am(:,:,iSys) = LinearModels.P{iSys}.A;
     Bm(:,:,iSys) = LinearModels.P{iSys}.B;
-    Cm(:,:,iSys) = LinearModels.P{iSys}.C;
-    Dm(:,:,iSys) = LinearModels.P{iSys}.D;
     
 end
 
 % permute matrices
 Am = permute(Am,[3,1,2]);
 Bm = permute(Bm,[3,1,2]);
-Cm = permute(Cm,[3,1,2]);
-Dm = permute(Dm,[3,1,2]);
 
 % interpolate system matrices based on wind speed
 A_op = @(w) interp1(w_ops,Am,w,'pchip');
 B_op = @(w) interp1(w_ops,Bm,w,'pchip');
-C_op = @(w) interp1(w_ops,Cm,w,'pchip');
-D_op = @(w) interp1(w_ops,Dm,w,'pchip');
-
 
 %% load wind profile
 if strcmp(WindFile,'072720_183300.mat') == 1

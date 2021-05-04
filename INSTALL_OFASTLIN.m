@@ -101,7 +101,7 @@ zips(ind).test = 'INSTALL_DTQP';
 
 % zip 2
 ind = ind+1; 
-zips(ind).url = 'https://colostate-my.sharepoint.com/:u:/g/personal/athulsun_colostate_edu/EXn1-4J-p9pMhzDFzgxA0W0BrCuUbFogACiPfXdPohZlsA?download=1'; 
+zips(ind).url = 'https://colostate-my.sharepoint.com/:u:/g/personal/athulsun_colostate_edu/EVQc7NEy0dNJprTtMTWXW30BArbF_mtmJZTLA7GtpdTfOw?download=1';
 zips(ind).folder = 'DataFiles.zip';
 zips(ind).test = 'pd_0.2_linear';
  
