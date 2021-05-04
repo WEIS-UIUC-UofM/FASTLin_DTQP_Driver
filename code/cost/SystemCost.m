@@ -119,7 +119,7 @@ Cmoor = 3.415*10^4*d^2;
 
 %% Platform
 
-if varargin < 1
+if nargin < 1
     Mfactor = 0.2:0.1:1.2;
 end
 
