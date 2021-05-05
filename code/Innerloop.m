@@ -10,7 +10,7 @@
 % Contributor: Daniel R. Herber (danielrherber on GitHub)
 %--------------------------------------------------------------------------
 
-function [T1,U,X,Pitch_rate,F] = Innerloop(casefile,Pconstraint,WindFile,PlotFlag)
+function [T,U,X,Pitch_rate,F] = Innerloop(casefile,Pconstraint,WindFile,PlotFlag,opts)
 
 clc;
 
@@ -78,9 +78,6 @@ if filterflag
     Wind_speed     = filtfilt(b,1,Wind_speed);
 end
 
-%% disctretization points
-opts.dt.nt = 1000;
-
 %% W_fun
 % interpolate the discrete values of the wind speed into a continuous
 % function
@@ -135,7 +132,6 @@ end
 
 %% DTQP options
 
-opts.general.displevel = 2; % 0:none, 1:minimal, 2:verbose
 opts.dt.defects = 'TR';     % ZO, EF, Huen, ModEF, TR, HS, RK4, PS
 opts.dt.quadrature = 'CTR'; % CEF, CTR, CQHS, G, CC
 opts.dt.mesh = 'ED';        % ED, LGL, CGL, USER
@@ -200,6 +196,7 @@ setup.tf = time(end);
 
 %% Add the offset values for controls and states
 try
+T = T1;    
 X = Xl+ Xo_fun(W_fun(T1))';
 U = Ul + Uo_fun(W_fun(T1))';
 
