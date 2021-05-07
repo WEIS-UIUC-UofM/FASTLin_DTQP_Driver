@@ -161,29 +161,7 @@ if Valflag
 
 end
 
-%% Convert 
-Cflag = 0;
 
-if Cflag
-    P = cell(1,sizeW);
-    C = zeros(41,101);
-    D = zeros(41,3);
-    WindSpeed = w_ops;
-    
-    for i = 1: length(Mval)
-        for j = 1:sizeW
-            
-            A = squeeze(Aval(i,j,:,:));
-            B = squeeze(Bval(i,j,:,:));
-            
-            P{j} = ss(A,B,C,D);
-            SS_Ops(j).xop = squeeze(Xval(i,j,:));
-            SS_Ops(j).uop = squeeze(Uval(i,j,:));
-        end
-        savename = strcat('pd_',num2str(Mval(i)),'_linear.mat');
-        save(savename,'P','SS_Ops','WindSpeed')
-    end
-end
 
 %%
 

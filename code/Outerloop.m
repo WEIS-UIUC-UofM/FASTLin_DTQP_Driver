@@ -13,27 +13,29 @@ clc; clear;
 
 % pitch contraint
  Constraints = [3,4,5,6]; % list of pitch constraints
-%Constraints = 6;
+Constraints = 6;
 
 % matfile corresponding to the PtfmMass
-CaseNames = {'pd_0.2_linear','pd_0.25_linear','pd_0.3_linear','pd_0.35_linear',...
+CaseNames = {'pd_0.2_linear','pd_0.3_linear',...
     'pd_0.4_linear','pd_0.5_linear','pd_0.6_linear',...
     'pd_0.7_linear','pd_0.8_linear','pd_0.9_linear',...
     'pd_1.0_linear','pd_1.1_linear','pd_1.2_linear'};
+CaseNames = {'pd_1.0_linear'};
 
 % fraction of nominal mass
 Mfactor = [0.2:0.05:0.4,0.5:0.1:1.2];
 
 
 % Wind Files
-WindFiles = {'\iea15mw_0.mat','\iea15mw_1.mat','\iea15mw_2.mat','\iea15mw_3.mat','\iea15mw_4.mat','072720_183300.mat'};
+WindFiles = {'iea15mw_0.mat','iea15mw_1.mat','iea15mw_2.mat','iea15mw_3.mat','iea15mw_4.mat','072720_183300.mat'};
+WindFiles = {'072720_183300.mat'};
 
 % plot
-PlotFlag = false;
+PlotFlag = true;
 
 % DTQP options
-opts.dt.nt = 2000;
-opts.general.displevel = 0; % 0:none, 1:minimal, 2:verbose
+opts.dt.nt = 1000;
+opts.general.displevel = 2; % 0:none, 1:minimal, 2:verbose
 
 % length
 nc = length(Constraints);
@@ -58,7 +60,7 @@ end
 time = toc;
 
 % LCOE
-LCOEflag = 1;
+LCOEflag = 0;
 
 % plot LCOE
 LCplot = 1;

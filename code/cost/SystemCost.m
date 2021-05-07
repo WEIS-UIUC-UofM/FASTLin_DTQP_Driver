@@ -120,7 +120,8 @@ Cmoor = 3.415*10^4*d^2;
 %% Platform
 
 if nargin < 1
-    Mfactor = 0.2:0.1:1.2;
+%     Mfactor = 0.2:0.1:1.2;
+    Mfactor = 1;
 end
 
 % component weights
@@ -168,6 +169,6 @@ C_nacelle = (11.537*Ptur*1000+3849.7);
 C_gen = Ptur*1000*219.33;
 C_mooring = 0.42*Lmoor*2437;
 
-C_turbine_old = C_tower + C_blades + C_nacelle + C_gen + C_mooring;
+C_turbine_old = C_tower + C_blades + C_nacelle + C_gen + C_mooring + Cptfm;
 
 end

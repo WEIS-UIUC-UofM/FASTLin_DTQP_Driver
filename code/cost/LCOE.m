@@ -11,7 +11,7 @@
 function [LC,CC,AEP] = LCOE(Fflag,StoreVals,Mfactor,LCplot)
 % determine size
 
-s = size(Fflag);
+s = size(Fflag,[1 2 3]);
 nm = s(1);nc = s(2);nw = s(3);
 
 % Calculate system cost
@@ -103,7 +103,7 @@ if LCplot
     plot(Mfactor*100,LC,'.-','LineWidth',2,'MarkerSize',15)
     xlabel('Percentage of Nominal Platform Mass [\%]','FontSize',14,'Interpreter','latex');
     ylabel('LCOE [\$/MWh]','FontSize',14,'Interpreter','latex');
-    Ld = legend('$\Theta_p$ $\leq$ 2 deg','$\Theta_p$ $\leq$ 3 deg','$\Theta_p$ $\leq$ 4 deg','$\Theta_p$ $\leq$ 5 deg','$\Theta_p$ $\leq$ 6 deg',...
+    Ld = legend('$\Theta_p$ $\leq$ 3 deg','$\Theta_p$ $\leq$ 4 deg','$\Theta_p$ $\leq$ 5 deg','$\Theta_p$ $\leq$ 5 deg',...
         'FontSize',14,'location','northoutside','Interpreter','latex','Orientation','horizontal');
     Ld.NumColumns = 3;
 end

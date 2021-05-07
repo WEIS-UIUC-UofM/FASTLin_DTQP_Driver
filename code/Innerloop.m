@@ -88,11 +88,21 @@ W_fun = @(t) ppval(ppW,t); % wind speed function
 %% DxoDt_fun
 % LPV model correction term for time varying nature of the operating point
 % (Dxo/Dt)
-ppDW = fnder(ppW);
+
+% extract details from piece-wise polynomial by breaking it apart
+[breaks,coefs,l,k,d] = unmkpp(ppW);
+
+% make the polynomial that describes the derivative
+ppDW = mkpp(breaks,repmat(k-1:-1:1,d*l,1).*coefs(:,1:k-1),d);
 DW_fun = @(t) ppval(ppDW,t);
 
 Xo_pp = pchip(w_ops,x_opsM);
-DXo_pp = fnder(Xo_pp);
+
+% extract details from piece-wise polynomial by breaking it apart
+[breaks,coefs,l,k,d] = unmkpp(Xo_pp);
+
+% make the polynomial that describes the derivative
+DXo_pp = mkpp(breaks,repmat(k-1:-1:1,d*l,1).*coefs(:,1:k-1),d);
 DXo_fun = @(w) ppval(DXo_pp,w);
 
 DXoDt_fun = @(t)((-DXo_fun(W_fun(t'))).*DW_fun(t'))';
@@ -202,9 +212,10 @@ U = Ul + Uo_fun(W_fun(T1))';
 
 % evaluate pitch rate
 Pitch = pchip(T1,rad2deg(U(:,3)));
-Prate = fnder(Pitch);
-Pr = @(t)ppval(Prate,t);
-Pitch_rate = Pr(T1);
+[breaks,coefs,l,k,d] = unmkpp(Pitch);
+Prate = mkpp(breaks,repmat(k-1:-1:1,d*l,1).*coefs(:,1:k-1),d);
+Pitch_rate = ppval(Prate,T1);
+
 
 if PlotFlag
     % plot
