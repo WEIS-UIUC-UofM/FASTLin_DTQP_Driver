@@ -101,10 +101,21 @@ zips(ind).test = 'INSTALL_DTQP';
 
 % zip 2
 ind = ind+1; 
-zips(ind).url = 'https://colostate-my.sharepoint.com/:u:/g/personal/athulsun_colostate_edu/EVQc7NEy0dNJprTtMTWXW30BArbF_mtmJZTLA7GtpdTfOw?download=1';
+zips(ind).url = 'https://colostate-my.sharepoint.com/:u:/g/personal/athulsun_colostate_edu/ESnrgFVwP7VLl4cSfKQhURQBk37vsGETQT4S_28_zPPr8g?download=1';
 zips(ind).folder = 'DataFiles.zip';
-zips(ind).test = 'pd_0.2_linear';
- 
+zips(ind).test = 'pd_0.2_linear.mat';
+
+% zip 3
+ind = ind+1;
+zips(ind).url = 'https://www.mathworks.com/matlabcentral/mlc-downloads/downloads/submissions/47246/versions/3/download/zip';
+zips(ind).folder = 'Tint.zip';
+zips(ind).test = 'tint';
+
+% zip 4
+ind = ind+1;
+zips(ind).url = 'https://colostate-my.sharepoint.com/:u:/g/personal/athulsun_colostate_edu/EdzHIL6FOIVBnjiCLcyk6sQBQxI8yuVDKSTfGYecCxB3IQ?download=1';
+zips(ind).folder = 'TDData.zip';
+zips(ind).test = 'Step.mat';
 
 % obtain full function path
 full_fun_path = which(mfilename('fullpath'));
@@ -147,10 +158,10 @@ for k = 1:length(zips)
             zipname = websave(folder,url);
 
             % save location
-            if k == 2
-                outputdirname = fullfile(outputdir,'DataFiles');
+            if k == 1
+                 outputdirname = fullfile(outputdir,folder);
             else
-                outputdirname = fullfile(outputdir,folder);
+               outputdirname = fullfile(outputdir,'DataFiles');
             end
 
             % create a folder utilizing name as the foldername name
@@ -162,10 +173,10 @@ for k = 1:length(zips)
             unzip(zipname,outputdirname);
 
             % delete the zip file
-            if k ==2
-                delete(folder)
-            else
-                delete([folder,'.zip'])
+            if k ==1
+               delete([folder,'.zip'])
+            else 
+                 delete(folder)
             end
 
             % output to the command window

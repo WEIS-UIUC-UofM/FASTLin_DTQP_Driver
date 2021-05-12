@@ -8,11 +8,17 @@
 % Contributor: Yong Hoon Lee (yonghoonlee on GitHub)
 % Contributor: Daniel R. Herber (danielrherber on GitHub)
 %--------------------------------------------------------------------------
-function [LC,CC,AEP] = LCOE(Fflag,StoreVals,Mfactor,LCplot)
+function [LC,CC,AEP] = LCOE(Fflag,StoreVals,Mfactor,LCplot,c)
 % determine size
 
 s = size(Fflag,[1 2 3]);
 nm = s(1);nc = s(2);nw = s(3);
+
+LD = cell(1,nc);
+
+for i = 1:nc
+    LD{i} =  ['$\Theta_p$ $\leq$',num2str(c(i)),' deg'];
+end
 
 % Calculate system cost
 [Mturbine,Cturbine] = SystemCost(Mfactor);
@@ -103,7 +109,7 @@ if LCplot
     plot(Mfactor*100,LC,'.-','LineWidth',2,'MarkerSize',15)
     xlabel('Percentage of Nominal Platform Mass [\%]','FontSize',14,'Interpreter','latex');
     ylabel('LCOE [\$/MWh]','FontSize',14,'Interpreter','latex');
-    Ld = legend('$\Theta_p$ $\leq$ 3 deg','$\Theta_p$ $\leq$ 4 deg','$\Theta_p$ $\leq$ 5 deg','$\Theta_p$ $\leq$ 5 deg',...
+    Ld = legend(LD,...
         'FontSize',14,'location','northoutside','Interpreter','latex','Orientation','horizontal');
     Ld.NumColumns = 3;
 end

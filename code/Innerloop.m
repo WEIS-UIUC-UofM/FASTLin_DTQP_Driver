@@ -10,13 +10,7 @@
 % Contributor: Daniel R. Herber (danielrherber on GitHub)
 %--------------------------------------------------------------------------
 
-function [T,U,X,Pitch_rate,F] = Innerloop(casefile,Pconstraint,WindFile,PlotFlag,opts)
-
-clc;
-
-%% Load Linear Model File
-LinModelFile = strcat(casefile,'.mat');
-LinearModels = load(LinModelFile);
+function [T,U,X,Pitch_rate,F] = Innerloop(LinearModels,Pconstraint,WindFile,PlotFlag,opts)
 
 % Set length
 nl = length(LinearModels.P);

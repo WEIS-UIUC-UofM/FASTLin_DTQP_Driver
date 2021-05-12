@@ -1,3 +1,12 @@
+% SystemCost.m
+% The cost model for the FOWT system
+%--------------------------------------------------------------------------
+% 
+%--------------------------------------------------------------------------
+% Contributor: Athul K. Sundarrajan (AthulKrishnaSundarrajan on GitHub)
+% Contributor: Yong Hoon Lee (yonghoonlee on GitHub)
+% Contributor: Daniel R. Herber (danielrherber on GitHub)
+%--------------------------------------------------------------------------
 function [Mturbine,Cturbine] = SystemCost(Mfactor)
 %% System plant parameters
 

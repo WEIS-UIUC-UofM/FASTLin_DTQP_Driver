@@ -1,3 +1,13 @@
+% TEST_SS_M.m
+% Validation of 1-d interpolation of the system based on mass
+%--------------------------------------------------------------------------
+% 
+%--------------------------------------------------------------------------
+% Contributor: Athul K. Sundarrajan (AthulKrishnaSundarrajan on GitHub)
+% Contributor: Yong Hoon Lee (yonghoonlee on GitHub)
+% Contributor: Daniel R. Herber (danielrherber on GitHub)
+%--------------------------------------------------------------------------
+
 clc; clear; close all;
 
 % Mass cases
@@ -28,10 +38,10 @@ ValCases{i} = CaseNames{Valind(i)};
 end
 
 % initialize
-Afit = zeros(Nfit,46,101,101);
-Bfit = zeros(Nfit,46,101,3);
-Xfit = zeros(Nfit,46,101,1);
-Ufit = zeros(Nfit,46,3,1);
+Afit = zeros(Nfit,56,101,101);
+Bfit = zeros(Nfit,56,101,3);
+Xfit = zeros(Nfit,56,101,1);
+Ufit = zeros(Nfit,56,3,1);
 
 for i = 1:Nfit
     LinModelFile = strcat(FitCases{i},'.mat');
@@ -110,8 +120,9 @@ if Valflag
     
     T = eye(101);
     % color maps
-    cfit = spring(Nfit);
-    cval = winter(Nval);
+    cfit = [183 28 28]/255;
+    cint = [13 71 161]/255;
+    cval = tint(cfit,0.6);
     
     % interpolate matrix
     Ainterp = interp1(M,Afit,Minterp,interpmethod);
@@ -121,16 +132,16 @@ if Valflag
     Ainterp = permute(Ainterp,[2,3,1]);
     
     % plot interpolated data points
-    ha1 = plotA(Ainterp,Minterp,'k',6);
+    ha1 = plotA(Ainterp,Minterp,cint,6);
     
     % plot fitting data points
     for k = 1:Nfit
-        ha2 = plotA(squeeze(Afit(k,Navg,:,:)),Mfit(k),cfit(k,:),16);
+        ha2 = plotA(squeeze(Afit(k,Navg,:,:)),Mfit(k),cfit,16);
     end
     
     % plot validation points
     for k = 1:Nval
-        ha3 = plotA(squeeze(Aval(k,Navg,:,:)),Mval(k),cval(k,:),16);
+        ha3 = plotA(squeeze(Aval(k,Navg,:,:)),Mval(k),cval,16);
     end
     
     xlabel('Real','FontSize',14);xlim([-0.09 -0.045])
@@ -150,9 +161,9 @@ if Valflag
     
     xmax = max(abs(Xinterp'),[],2) + 1e-4;
     
-    hx1 = plot(Minterp,Xinterp,'b-','markersize',6);
-    hx2 = plot(Mfit,squeeze(Xfit(:,Navg,:)),'k.','markersize',16);
-    hx3 = plot(Mval,squeeze(Xval(:,Navg,:)),'r.','markersize',16);
+    hx1 = plot(Minterp,Xinterp,'color',cint,'markersize',6);
+    hx2 = plot(Mfit,squeeze(Xfit(:,Navg,:)),'.','color',cfit,'markersize',16);
+    hx3 = plot(Mval,squeeze(Xval(:,Navg,:)),'.','color',cval,'markersize',16);
     
     ylabel('State Operating points values','FontSize',14)
     xlabel('Mass Fraction','FontSize',14);
