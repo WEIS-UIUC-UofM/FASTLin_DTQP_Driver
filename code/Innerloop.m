@@ -183,6 +183,14 @@ UB(ix).matrix =  X0_n-Xo_fun(W_fun(0));
 LB(ix).right = 4;
 LB(ix).matrix = X0_n-Xo_fun(W_fun(0));
 
+%% Scaling
+% scaling matrix
+Usc = [1;
+    5.0968e-08;
+    5.0607];
+
+setup.scaling(1).right = 1;
+setup.scaling(1).matrix = Usc;
 %% DTQP setup
 
 setup.A = TVmat2cell(@(t)A_op(W_fun(t)),time);

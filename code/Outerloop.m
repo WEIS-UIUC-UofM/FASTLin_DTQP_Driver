@@ -11,11 +11,11 @@ function Outerloop
 
 %% pitch contraint
  Constraints = [3,4,5,6]; % list of pitch constraints
-%Constraints = 6;
+Constraints = 6;
 
 %% Mass fractions
-M = [1];
-
+M = [0.2:0.01:0.3,0.4:0.1:1.2];
+M = 1;
 % number of masses
 nm = length(M);
 
@@ -69,14 +69,14 @@ end
 
 %% Wind Files
 WindFiles = {'iea15mw_0.mat','iea15mw_1.mat','iea15mw_2.mat','iea15mw_3.mat','iea15mw_4.mat','072720_183300.mat'};
-%WindFiles = {'072720_183300.mat'};
+WindFiles = {'072720_183300.mat'};
 
 % plot
-PlotFlag = 0;
+PlotFlag = 1;
 
 % DTQP options
 opts.dt.nt = 1000;
-opts.general.displevel = 0; % 0:none, 1:minimal, 2:verbose
+opts.general.displevel = 2; % 0:none, 1:minimal, 2:verbose
 
 % length
 nc = length(Constraints);
@@ -89,7 +89,7 @@ StoreVals = cell(nm,nc,nw);
 
 % calculate inner loop response
 tic
-parfor m = 1:nm
+for m = 1:nm
     for c = 1:nc
         for w = 1:nw
             [T,U,X,Pitch_rate,F] = Innerloop(LM{m},Constraints(c),WindFiles{w},PlotFlag,opts);
