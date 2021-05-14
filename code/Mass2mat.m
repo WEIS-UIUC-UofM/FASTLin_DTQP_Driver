@@ -7,15 +7,20 @@
 % Contributor: Yong Hoon Lee (yonghoonlee on GitHub)
 % Contributor: Daniel R. Herber (danielrherber on GitHub)
 %--------------------------------------------------------------------------
-function LM = Mass2mat(M)
+function LM = Mass2mat(M,ReduceFlag)
 
 LM = cell(1,length(M));
 
 % Mass cases
-CaseNames = {'pd_0.2_linear','pd_0.3_linear','pd_0.4_linear','pd_0.5_linear','pd_0.6_linear',...
-    'pd_0.7_linear','pd_0.8_linear','pd_0.9_linear',...
-    'pd_1.0_linear','pd_1.1_linear','pd_1.2_linear'};
-
+if ReduceFlag
+   CaseNames = {'pd_0.2_linear_red','pd_0.3_linear_red','pd_0.4_linear_red','pd_0.5_linear_red','pd_0.6_linear_red',...
+        'pd_0.7_linear_red','pd_0.8_linear_red','pd_0.9_linear_red',...
+        'pd_1.0_linear_red','pd_1.1_linear_red','pd_1.2_linear_red'};
+else
+    CaseNames = {'pd_0.2_linear','pd_0.3_linear','pd_0.4_linear','pd_0.5_linear','pd_0.6_linear',...
+        'pd_0.7_linear','pd_0.8_linear','pd_0.9_linear',...
+        'pd_1.0_linear','pd_1.1_linear','pd_1.2_linear'};
+end
 % Validation and fitting indices
 Fitind = 1:1:11;Nfit = length(Fitind);
 interpmethod = 'spline';
@@ -70,6 +75,10 @@ for i = 1:Nfit
    
 end
 
+% get size
+nx = size(Am,2);
+nu = size(Bm,2);
+
 % number of wind speed
 sizeW = length(w_ops);
 
@@ -83,8 +92,8 @@ Uval = interp1(Mfit,Ufit,M,interpmethod);
 
 
 P = cell(1,sizeW);
-C = zeros(41,101);
-D = zeros(41,3);
+C = zeros(41,nx);
+D = zeros(41,nu);
 WindSpeed = w_ops;
 
 for i = 1: length(M)

@@ -24,12 +24,23 @@ CaseNames = cell(1,nm);
 LM = cell(1,nm);
 idx = false(1,nm);
 
+%% Reduced model
+ReduceFlag = 1;
+
+if ReduceFlag
+    prefix = 'pd_';
+    suffix = '_linear_red.mat';
+else
+    prefix = 'pd_';
+    suffix = '_linear.mat';
+end
+
 for i = 1:nm
     % matfile corresponding to the PtfmMass
     if M(i) == 1
-        CaseNames{i} = ['pd_',num2str(M(i),'%.1f'),'_linear.mat'];
+        CaseNames{i} = [prefix,num2str(M(i),'%.1f'),suffix];
     else
-        CaseNames{i} = ['pd_',num2str(M(i)),'_linear.mat'];
+        CaseNames{i} = [prefix,num2str(M(i)),suffix];
     end
     
     % check if it exists
@@ -58,7 +69,7 @@ if ~isempty(ind0)
     end
     
     % Interpolate and find the system matrices for the given fraction
-    X = Mass2mat(Mi);
+    X = Mass2mat(Mi,ReduceFlag);
     
     % Assign
     for i = 1:length(ind0)

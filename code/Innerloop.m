@@ -41,6 +41,9 @@ end
 Am = permute(Am,[3,1,2]);
 Bm = permute(Bm,[3,1,2]);
 
+nx = size(Am,3);
+nu = size(Bm,3);
+
 % interpolate system matrices based on wind speed
 A_op = @(w) interp1(w_ops,Am,w,'pchip');
 B_op = @(w) interp1(w_ops,Bm,w,'pchip');
@@ -124,11 +127,11 @@ ub(5) = 0.7913+0.0001;
 lb = -inf(size(max(r,[],2)));
 
 % initialize UB,LB cell arrays
-UB1 = cell(101,1);
-LB1 = cell(101,1);
+UB1 = cell(nx,1);
+LB1 = cell(nx,1);
 
 % 
-for i = 1:101
+for i = 1:nx
     UB1{i} = @(t) ub(i) - indexat(Xo_fun(W_fun(t)),i);
     LB1{i} = @(t) lb(i) - indexat(Xo_fun(W_fun(t)),i);
 end
@@ -176,6 +179,7 @@ LB(ix).matrix = LB1;
 ix = ix+1;
 
 load('X0_nominal.mat');
+X0_n(nx+1:end) = [];
 
 UB(ix).right = 4;
 UB(ix).matrix =  X0_n-Xo_fun(W_fun(0));
@@ -185,12 +189,13 @@ LB(ix).matrix = X0_n-Xo_fun(W_fun(0));
 
 %% Scaling
 % scaling matrix
-Usc = [1;
-    5.0968e-08;
-    5.0607];
+Usc =  [1;
+    1e8;
+    0.2];
+Usc(1) = 1;
 
-setup.scaling(1).right = 1;
-setup.scaling(1).matrix = Usc;
+%setup.scaling(1).right = 1;
+%setup.scaling(1).matrix = Usc;
 %% DTQP setup
 
 setup.A = TVmat2cell(@(t)A_op(W_fun(t)),time);

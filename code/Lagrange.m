@@ -27,19 +27,19 @@ lx = lx+1;
 % -yl*ul
 L(lx).left = 1;
 L(lx).right = 2;
-Lmat = zeros(3,101); Lmat(2,5) = 1;
+Lmat = zeros(nu,nx); Lmat(2,5) = 1;
 L(lx).matrix = -Lmat;
 lx = lx+1;
 
 % -ul*yo
 L(lx).left = 0;
 L(lx).right = 1;
-L2mat = cell(1,3);L2mat{2} = @(t) GSn_fun(W_fun(t));
+L2mat = cell(1,nu);L2mat{2} = @(t) GSn_fun(W_fun(t));
 L(lx).matrix = L2mat;
 lx = lx+1;
 
 % -yl*uo
-L3mat = cell(1,101); L3mat{5} = @(t) GTn_fun(W_fun(t));
+L3mat = cell(1,nx); L3mat{5} = @(t) GTn_fun(W_fun(t));
 L(lx).left = 0;
 L(lx).right = 2;
 L(lx).matrix = L3mat;
@@ -48,7 +48,7 @@ lx = lx+1;
 
 TQmax = max(u_opsM(2,:));
 GSmax = 0.7913;
-SMat = zeros(101,1); SMat(5) = TQmax;
+SMat = zeros(nx,1); SMat(5) = TQmax;
 
 % -yo*uo
 L(lx).left = 0;
