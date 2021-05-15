@@ -21,20 +21,20 @@ lx = 1;
 % Ru^2
 L(lx).left = 1;
 L(lx).right = 1;
-L(lx).matrix = diag([0,R1,R2]);
+L(lx).matrix = diag([R1,R2]);
 lx = lx+1;
 
 % -yl*ul
 L(lx).left = 1;
 L(lx).right = 2;
-Lmat = zeros(nu,nx); Lmat(2,5) = 1;
+Lmat = zeros(nu,nx); Lmat(nT,5) = 1;
 L(lx).matrix = -Lmat;
 lx = lx+1;
 
 % -ul*yo
 L(lx).left = 0;
 L(lx).right = 1;
-L2mat = cell(1,nu);L2mat{2} = @(t) GSn_fun(W_fun(t));
+L2mat = cell(1,nu);L2mat{nT} = @(t) GSn_fun(W_fun(t));
 L(lx).matrix = L2mat;
 lx = lx+1;
 
@@ -57,7 +57,7 @@ L(lx).matrix = {@(t) GP_fun(W_fun(t))};
 
 % linear constraint on power
 Z(1).linear(1).right = 1;
-Z(1).linear(1).matrix = [0,GSmax,0]';
+Z(1).linear(1).matrix = [GSmax,0]';
 Z(1).linear(2).right = 2;
 Z(1).linear(2).matrix = SMat;
 Z(1).b = @(t)(15000 + 0.9655*TQmax*(GSmax + GSn_fun(W_fun(t))) + 0.9655*GSmax*(TQmax + GTn_fun(W_fun(t))));

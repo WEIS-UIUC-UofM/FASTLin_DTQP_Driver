@@ -42,11 +42,13 @@ Am = permute(Am,[3,1,2]);
 Bm = permute(Bm,[3,1,2]);
 
 nx = size(Am,3);
-nu = size(Bm,3);
+nu = size(Bm,3)-1;
+nP = 2;
+nT = 1;
 
 % interpolate system matrices based on wind speed
 A_op = @(w) interp1(w_ops,Am,w,'pchip');
-B_op = @(w) interp1(w_ops,Bm,w,'pchip');
+B_op = @(w) interp1(w_ops,Bm(:,:,2:3),w,'pchip');
 
 %% load wind profile
 if strcmp(WindFile,'072720_183300.mat') == 1
@@ -156,12 +158,12 @@ ix = 1;
 % remove the offset for control bounds
 
 UB(ix).right = 1;
-UB(ix).matrix = {@(t) W_fun(t)-W_fun(t);
+UB(ix).matrix = {%@(t) W_fun(t)-W_fun(t);
     @(t) max(u_opsM(2,:))-GT_fun(W_fun(t));
     @(t) max(u_opsM(3,:))-BP_fun(W_fun(t))};
 
 LB(ix).right = 1;
-LB(ix).matrix = {@(t) W_fun(t)-W_fun(t);
+LB(ix).matrix = {%@(t) W_fun(t)-W_fun(t);
     @(t) min(u_opsM(2,:))-GT_fun(W_fun(t));
     @(t) min(u_opsM(3,:))-BP_fun(W_fun(t))};
 
@@ -189,8 +191,7 @@ LB(ix).matrix = X0_n-Xo_fun(W_fun(0));
 
 %% Scaling
 % scaling matrix
-Usc =  [1;
-    1e8;
+Usc =  [1e8;
     0.2];
 Usc(1) = 1;
 
@@ -215,6 +216,7 @@ setup.tf = time(end);
 try
 T = T1;    
 X = Xl+ Xo_fun(W_fun(T1))';
+Ul = [zeros(size(T1)),Ul];
 U = Ul + Uo_fun(W_fun(T1))';
 
 % evaluate pitch rate
